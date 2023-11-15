@@ -62,6 +62,13 @@ namespace Microsoft.Xna.Framework.Input.Touch
         /// </summary>
         public event EventHandler<TouchLocation> OnTouchEvent;
 
+        /// <summary>
+        /// Raised when a new, raw, high-frequency touch event is processed. This may be
+        /// sent in addition to OnTouchEvent. This is optional side-channel and controlled
+        /// via <code>TouchPanel.EnableCoalescedTouch</code> flag.
+        /// </summary>
+        public event EventHandler<TouchLocation> OnCoalescedTouchEvent;
+
         internal readonly GameWindow Window;
 
         internal TouchPanelState(GameWindow window)
@@ -160,7 +167,7 @@ namespace Microsoft.Xna.Framework.Input.Touch
             return result;
         }
 
-        internal void AddHighResolutionTouchEvent(int id, TouchLocationState state, Vector2 position)
+        internal void AddCoalescedEvent(int id, TouchLocationState state, Vector2 position)
         {
             //Try to find the touch id.
             int touchId;
@@ -168,9 +175,8 @@ namespace Microsoft.Xna.Framework.Input.Touch
             {
                 return;
             }
-            var evt = new TouchLocation(touchId, state, position * _touchScale, CurrentTimestamp,
-                /* isHighFrequencyEvent */ true);
-            EventHelpers.Raise(this, OnTouchEvent, evt);
+            var evt = new TouchLocation(touchId, state, position * _touchScale, CurrentTimestamp);
+            EventHelpers.Raise(this, OnCoalescedTouchEvent, evt);
         }
 
         internal void AddEvent(int id, TouchLocationState state, Vector2 position)
@@ -336,10 +342,9 @@ namespace Microsoft.Xna.Framework.Input.Touch
         public bool EnableMouseGestures { get; set; }
 
         /// <summary>
-        /// Gets or sets if high-frequency touch event processing is enabled.
-        /// See <see cref="TouchPanel.EnableHighFrequencyTouch" /> for more details.
+        /// Gets or sets if coalesced touch event processing is enabled.
         /// </summary>
-        public bool EnableHighFrequencyTouch { get; set; }
+        public bool EnableCoalescedTouch => OnCoalescedTouchEvent != null;
 
         /// <summary>
         /// Returns true if a touch gesture is available.
