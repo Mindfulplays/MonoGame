@@ -82,25 +82,11 @@ namespace Microsoft.Xna.Framework.Media
             }
             else
             {
-                // Try the game's assets if we are using the ContentManager, otherwise, try
-                // if the name refers to a file directly..
-                try
-                {
-                    var afd = Game.Activity.Assets.OpenFd(_name);
-                    _androidPlayer.SetDataSource(afd.FileDescriptor, afd.StartOffset, afd.Length);
-                }
-                catch (Exception)
-                {
-                    try
-                    {
-                        _androidPlayer.SetDataSource(_name);
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e); 
-                        // At this point, it's too late to do anything, so log an error (silently).
-                    }
-                }
+                var afd = Game.Activity.Assets.OpenFd(_name);
+                if (afd == null)
+                    return;
+
+                _androidPlayer.SetDataSource(afd.FileDescriptor, afd.StartOffset, afd.Length);
             }
 
 
