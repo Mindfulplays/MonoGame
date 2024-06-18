@@ -148,6 +148,7 @@ namespace Microsoft.Xna.Framework.Media
             _player.Pause();
 			_playCount = 0;
 		}
+    
 
 		internal float Volume
 		{
@@ -165,6 +166,12 @@ namespace Microsoft.Xna.Framework.Media
                     _player.Volume = value;
 			}			
 		}
+
+    // TODO: Implement this.
+    private bool PlatformIsPlaying()
+    {
+        return false;
+    }
 
 		internal TimeSpan Position
         {

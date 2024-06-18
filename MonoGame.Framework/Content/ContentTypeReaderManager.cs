@@ -24,7 +24,7 @@ namespace Microsoft.Xna.Framework.Content
 
         private static readonly string _assemblyName;
 
-        private static readonly bool _isRunningOnNetCore = typeof(object).Assembly.GetName().Name == "System.Private.CoreLib";
+        private static readonly bool _isRunningOnNetCore = Type.GetType("System.Private.CoreLib") != null;
 
         static ContentTypeReaderManager()
         {
@@ -151,7 +151,7 @@ namespace Microsoft.Xna.Framework.Content
 
                         readerTypeString = PrepareType(readerTypeString);
 
-                        var l_readerType = Type.GetType(readerTypeString);
+                        var l_readerType = Type.GetType(originalReaderTypeString) ?? Type.GetType(readerTypeString);
                         if (l_readerType != null)
                         {
                             ContentTypeReader typeReader;
@@ -233,6 +233,10 @@ namespace Microsoft.Xna.Framework.Content
             preparedType = preparedType.Replace(", Microsoft.Xna.Framework.Graphics", string.Format(", {0}", _assemblyName));
             preparedType = preparedType.Replace(", Microsoft.Xna.Framework.Video", string.Format(", {0}", _assemblyName));
             preparedType = preparedType.Replace(", Microsoft.Xna.Framework", string.Format(", {0}", _assemblyName));
+
+            // Required for iOS. ContentTypeReader `ListReader<Char>` shows up as `Microsoft.Xna.Framework.Content.ListReader`1[System.Char]`
+            // and not `Microsoft.Xna.Framework.Content.ListReader`1[[System.Char, mscorlib]]`
+            preparedType = preparedType.Replace(", mscorlib", "");
 
             if (_isRunningOnNetCore)
                 preparedType = preparedType.Replace("mscorlib", "System.Private.CoreLib");

@@ -28,6 +28,8 @@ namespace MonoGame.Effect
 
         public static readonly ShaderProfile DirectX_11 = FromName("DirectX_11");
 
+        public static readonly ShaderProfile Metal = FromName("Metal");
+
         /// <summary>
         /// Returns all the loaded shader profiles.
         /// </summary>

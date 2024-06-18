@@ -18,7 +18,6 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
     [ContentProcessor(DisplayName = "Effect - MonoGame")]
     public class EffectProcessor : ContentProcessor<EffectContent, CompiledEffectContent>
     {
-        private static readonly Regex errorOrWarning = new(@"(.*)\((\d*,\d*(?>,\d*,\d*)?)\):\s*(.*)", RegexOptions.Compiled);
         EffectProcessorDebugMode debugMode;
         string defines;
 
@@ -53,7 +52,8 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
             var mgfxc = Path.Combine(Path.GetDirectoryName(typeof(EffectProcessor).Assembly.Location), "mgfxc.dll");
             var sourceFile = input.Identity.SourceFilename;
             var destFile = Path.GetTempFileName();
-            var arguments = "\"" + mgfxc + "\" \"" + sourceFile + "\" \"" + destFile + "\" /Profile:" + GetProfileForPlatform(context.TargetPlatform);
+            var arguments = "\"" + mgfxc + "\" \"" + sourceFile + "\" \"" + destFile + "\" /Profile:" +
+                            GetProfileForPlatform(context.TargetPlatform);
 
             if (debugMode == EffectProcessorDebugMode.Debug)
                 arguments += " /Debug";
@@ -71,19 +71,18 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
             var stdOutLines = stdout.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
             foreach (var line in stdOutLines)
             {
-                if (line.StartsWith("Dependency:") && line.Length > 12)
-                {
-                    context.AddDependency(line.Substring(12));
-                }
+                if (line.StartsWith("Dependency:") && line.Length > 12) { context.AddDependency(line.Substring(12)); }
             }
 
-            ProcessErrorsAndWarnings(!success, stderr, input, context);
+            ProcessErrorsAndWarnings(!success, shaderCompilationOutput: stdout, shaderErrorsAndWarnings: stderr, input, context);
 
             return ret;
         }
 
         private string GetProfileForPlatform(TargetPlatform platform)
         {
+            // Must match the platforms in
+            // MonoGame/Tools/MonoGame.Effect.Compiler/Effect/ShaderProfile.cs.
             switch (platform)
             {
                 case TargetPlatform.Windows:
@@ -97,31 +96,36 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
                 case TargetPlatform.RaspberryPi:
                 case TargetPlatform.Web:
                     return "OpenGL";
+                case TargetPlatform.MetalIOS:
+                case TargetPlatform.MetalMacOS:
+                    return "Metal";
             }
 
             return platform.ToString();
         }
 
-        private static void ProcessErrorsAndWarnings(bool buildFailed, string shaderErrorsAndWarnings, EffectContent input, ContentProcessorContext context)
+        private static void ProcessErrorsAndWarnings(bool buildFailed, string shaderCompilationOutput, string shaderErrorsAndWarnings,
+            EffectContent input, ContentProcessorContext context)
         {
             // Split the errors and warnings into individual lines.
             var errorsAndWarningArray = shaderErrorsAndWarnings.Split(new[] { "\n", "\r", Environment.NewLine },
-                                                                      StringSplitOptions.RemoveEmptyEntries);
+                StringSplitOptions.RemoveEmptyEntries);
 
+            var errorOrWarning = new Regex(@"(.*)\(([0-9]*(,[0-9]+(-[0-9]+)?)?)\)\s*:\s*(.*)", RegexOptions.Compiled);
             ContentIdentity identity = null;
-            var allErrorsAndWarnings = new System.Text.StringBuilder();
+            var allErrorsAndWarnings = string.Empty;
 
             // Process all the lines.
-            foreach (var errorOrWarningLine in errorsAndWarningArray)
+            for (var i = 0; i < errorsAndWarningArray.Length; i++)
             {
-                var match = errorOrWarning.Match(errorOrWarningLine);
+                var match = errorOrWarning.Match(errorsAndWarningArray[i]);
                 if (!match.Success || match.Groups.Count != 4)
                 {
                     // Just log anything we don't recognize as a warning.
                     if (buildFailed)
-                        allErrorsAndWarnings.AppendLine(errorOrWarningLine);
+                        allErrorsAndWarnings += errorsAndWarningArray[i] + Environment.NewLine;
                     else
-                        context.Logger.LogWarning(string.Empty, input.Identity, errorOrWarningLine);
+                        context.Logger.LogWarning(string.Empty, input.Identity, errorsAndWarningArray[i]);
 
                     continue;
                 }
@@ -139,26 +143,30 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
                     fileName = Path.Combine(folder, fileName);
                 }
 
-                var newIdentity = new ContentIdentity(fileName, input.Identity.SourceTool, lineAndColumn);
-
                 // If we got an exception then we'll be throwing an exception 
                 // below, so just gather the lines to throw later.
                 if (buildFailed)
                 {
                     if (identity == null)
                     {
-                        identity = newIdentity;
-                        allErrorsAndWarnings.AppendLine(message);
+                        identity = new ContentIdentity(fileName, input.Identity.SourceTool, lineAndColumn);
+                        allErrorsAndWarnings = errorsAndWarningArray[i] + Environment.NewLine;
                     }
                     else
-                        allErrorsAndWarnings.AppendLine(errorOrWarningLine);
+                        allErrorsAndWarnings += errorsAndWarningArray[i] + Environment.NewLine;
                 }
                 else
-                    context.Logger.LogWarning(string.Empty, newIdentity, message);
+                {
+                    identity = new ContentIdentity(fileName, input.Identity.SourceTool, lineAndColumn);
+                    context.Logger.LogWarning(string.Empty, identity, message, string.Empty);
+                }
             }
 
             if (buildFailed)
-                throw new InvalidContentException(allErrorsAndWarnings.ToString(), identity ?? input.Identity);
+            {
+                allErrorsAndWarnings += "\n" + shaderCompilationOutput;
+                throw new InvalidContentException(allErrorsAndWarnings, identity ?? input.Identity);
+            }
         }
     }
 }

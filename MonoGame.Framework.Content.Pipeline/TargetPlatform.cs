@@ -102,7 +102,17 @@ namespace Microsoft.Xna.Framework.Content.Pipeline
         /// <summary>
         /// WebAssembly and Bridge.NET
         /// </summary>
-        Web
+        Web,
+
+        /// <summary>
+        /// Apple Metal platform (for iOS).
+        /// </summary>
+        MetalIOS,
+
+        /// <summary>
+        /// Apple Metal platform (for macOS Catalyst).
+        /// </summary>
+        MetalMacOS,
     }
 
 
@@ -121,13 +131,12 @@ namespace Microsoft.Xna.Framework.Content.Pipeline
             {
                 return base.ConvertFrom(context, culture, value);
             }
-            catch (FormatException)
+            catch (FormatException fex)
             { 
                 // convert legacy Platforms
                 if (value.Equals("Linux") || value.Equals("WindowsGL"))
                     return TargetPlatform.DesktopGL;
-                else
-                    throw;
+                else throw fex;
             }
         }
     }

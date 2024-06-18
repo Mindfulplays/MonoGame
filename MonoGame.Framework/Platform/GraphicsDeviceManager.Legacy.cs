@@ -614,29 +614,33 @@ namespace Microsoft.Xna.Framework
                 adjustedAspectRatio = 1.0f / preferredAspectRatio;
             }
 
+
             const float EPSILON = 0.00001f;
             var newClientBounds = new Rectangle();
-            if (displayAspectRatio > (adjustedAspectRatio + EPSILON))
-            {
-                // Fill the entire height and reduce the width to keep aspect ratio
-                newClientBounds.Height = _graphicsDevice.DisplayMode.Height;
-                newClientBounds.Width = (int)(newClientBounds.Height * adjustedAspectRatio);
-                newClientBounds.X = (_graphicsDevice.DisplayMode.Width - newClientBounds.Width) / 2;
-            }
-            else if (displayAspectRatio < (adjustedAspectRatio - EPSILON))
-            {
-                // Fill the entire width and reduce the height to keep aspect ratio
-                newClientBounds.Width = _graphicsDevice.DisplayMode.Width;
-                newClientBounds.Height = (int)(newClientBounds.Width / adjustedAspectRatio);
-                newClientBounds.Y = (_graphicsDevice.DisplayMode.Height - newClientBounds.Height) / 2;
-            }
-            else
+            // NOTE(perumaal): Remove ugly hack that 
+            //if (displayAspectRatio > (adjustedAspectRatio + EPSILON))
+            //{
+            //    // Fill the entire height and reduce the width to keep aspect ratio
+            //    newClientBounds.Height = _graphicsDevice.DisplayMode.Height;
+            //    newClientBounds.Width = (int)(newClientBounds.Height * adjustedAspectRatio);
+            //    newClientBounds.X = (_graphicsDevice.DisplayMode.Width - newClientBounds.Width) / 2;
+            //}
+            //else if (displayAspectRatio < (adjustedAspectRatio - EPSILON))
+            //{
+            //    // Fill the entire width and reduce the height to keep aspect ratio
+            //    newClientBounds.Width = _graphicsDevice.DisplayMode.Width;
+            //    newClientBounds.Height = (int)(newClientBounds.Width / adjustedAspectRatio);
+            //    newClientBounds.Y = (_graphicsDevice.DisplayMode.Height - newClientBounds.Height) / 2;
+            //}
+            //else
             {
                 // Set the ClientBounds to match the DisplayMode
                 newClientBounds.Width = GraphicsDevice.DisplayMode.Width;
                 newClientBounds.Height = GraphicsDevice.DisplayMode.Height;
             }
 
+            // Uncomment the following to see screen size.
+            //Console.WriteLine($"pref: {PreferredBackBufferWidth}x{PreferredBackBufferHeight} {GraphicsDevice.DisplayMode.Width}x{GraphicsDevice.DisplayMode.Height} adj: {adjustedAspectRatio} vs {preferredAspectRatio} {displayAspectRatio} / {newClientBounds.DebugDisplayString}");
             // Ensure buffer size is reported correctly
             _graphicsDevice.PresentationParameters.BackBufferWidth = newClientBounds.Width;
             _graphicsDevice.PresentationParameters.BackBufferHeight = newClientBounds.Height;

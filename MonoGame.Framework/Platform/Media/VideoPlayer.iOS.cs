@@ -46,8 +46,9 @@ namespace Microsoft.Xna.Framework.Media
 
         private void PlatformPlay()
         {
+#if !APPLE_METAL            
             _platform.IsPlayingVideo = true;
-
+#endif
             _playbackDidFinishObserver = NSNotificationCenter.DefaultCenter.AddObserver(
                 MPMoviePlayerController.PlaybackDidFinishNotification, OnStop);
 
@@ -66,7 +67,9 @@ namespace Microsoft.Xna.Framework.Media
             }
 
             _currentVideo.MovieView.MoviePlayer.Stop();
+#if !APPLE_METAL            
             _platform.IsPlayingVideo = false;
+#endif
             _platform.ViewController.DismissViewController(false, null);
         }
 

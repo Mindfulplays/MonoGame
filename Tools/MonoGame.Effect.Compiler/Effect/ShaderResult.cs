@@ -27,6 +27,7 @@ namespace MonoGame.Effect
 
         public bool Debug { get; private set; }
 
+        public Options Options { get; private set; }
 
         static public ShaderResult FromFile(string path, Options options, IEffectCompilerOutput output)
         {
@@ -121,6 +122,7 @@ namespace MonoGame.Effect
 
             result.Profile = options.Profile;
             result.Debug = options.Debug;
+            result.Options = options;
 
             return result;
         }

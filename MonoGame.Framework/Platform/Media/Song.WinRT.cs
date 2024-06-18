@@ -104,6 +104,13 @@ namespace Microsoft.Xna.Framework.Media
             return 0;
         }
 
+        // TODO: Implement this.
+        private bool PlatformIsPlaying()
+        {
+            return false;
+        }
+
+
         private int PlatformGetTrackNumber()
         {
             if (this.musicProperties != null)

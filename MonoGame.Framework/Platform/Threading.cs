@@ -54,13 +54,13 @@ namespace Microsoft.Xna.Framework
             }
         }
 
-#if IOS
+#if IOS && !APPLE_METAL
         public static EAGLContext BackgroundContext;
 #endif
 
         static Threading()
         {
-            _mainThreadId = Thread.CurrentThread.ManagedThreadId;
+            _mainThreadId = Environment.CurrentManagedThreadId;
         }
 
 #if ANDROID
@@ -76,7 +76,7 @@ namespace Microsoft.Xna.Framework
         /// <returns>true if the code is currently running on the UI thread.</returns>
         public static bool IsOnUIThread()
         {
-            return _mainThreadId == Thread.CurrentThread.ManagedThreadId;
+            return _mainThreadId == Environment.CurrentManagedThreadId;
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace Microsoft.Xna.Framework
         {
             EnsureUIThread();
 
-#if IOS
+#if IOS && !APPLE_METAL
             lock (BackgroundContext)
             {
                 // Make the context current on this thread if it is not already
@@ -200,7 +200,7 @@ namespace Microsoft.Xna.Framework
                 _queuedActions.Clear();
             }
 
-#if IOS
+#if IOS && !APPLE_METAL
                 // Must flush the GL calls so the GPU asset is ready for the main context to use it
                 GL.Flush();
                 GraphicsExtensions.CheckGLError();

@@ -43,13 +43,13 @@ namespace MonoGame.Effect
                 }
 
                 // Use reflection to get details of the shader.
-                using (var refelect = new SharpDX.D3DCompiler.ShaderReflection(byteCode))
+                using (var reflect = new SharpDX.D3DCompiler.ShaderReflection(byteCode))
                 {
                     // Get the samplers.
                     var samplers = new List<Sampler>();
-                    for (var i = 0; i < refelect.Description.BoundResources; i++)
+                    for (var i = 0; i < reflect.Description.BoundResources; i++)
                     {
-                        var rdesc = refelect.GetResourceBindingDescription(i);
+                        var rdesc = reflect.GetResourceBindingDescription(i);
                         if (rdesc.Type == SharpDX.D3DCompiler.ShaderInputType.Texture)
                         {
                             var samplerName = rdesc.Name;
@@ -82,9 +82,9 @@ namespace MonoGame.Effect
                             }
 
                             // Find sampler slot, which can be different from the texture slot.
-                            for (int j = 0; j < refelect.Description.BoundResources; j++)
+                            for (int j = 0; j < reflect.Description.BoundResources; j++)
                             {
-                                var samplerrdesc = refelect.GetResourceBindingDescription(j);
+                                var samplerrdesc = reflect.GetResourceBindingDescription(j);
 
                                 if (samplerrdesc.Type == SharpDX.D3DCompiler.ShaderInputType.Sampler && 
                                     samplerrdesc.Name == samplerName)
@@ -124,10 +124,10 @@ namespace MonoGame.Effect
                     dxshader._samplers = samplers.ToArray();
 
                     // Gather all the constant buffers used by this shader.
-                    dxshader._cbuffers = new int[refelect.Description.ConstantBuffers];
-                    for (var i = 0; i < refelect.Description.ConstantBuffers; i++)
+                    dxshader._cbuffers = new int[reflect.Description.ConstantBuffers];
+                    for (var i = 0; i < reflect.Description.ConstantBuffers; i++)
                     {
-                        var cb = new ConstantBufferData(refelect.GetConstantBuffer(i));
+                        var cb = new ConstantBufferData(reflect.GetConstantBuffer(i));
 
                         // Look for a duplicate cbuffer in the list.
                         for (var c = 0; c < cbuffers.Count; c++)

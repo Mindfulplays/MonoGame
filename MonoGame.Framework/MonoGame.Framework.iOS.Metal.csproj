@@ -1,0 +1,127 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-ios</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Description>The MonoGame (Metal) runtime for iOS amd iPadOS. </Description>
+    <PackageTags>monogame;.net core;core;.net standard;standard;ios</PackageTags>
+    <PackageId>MonoGame.Framework.iOS</PackageId>
+    <AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>
+    <SupportedOSPlatformVersion>11.2</SupportedOSPlatformVersion>
+    <DefineConstants>IOS;APPLE_METAL;STBSHARP_INTERNAL;</DefineConstants>
+    <CreatePackage>false</CreatePackage>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DefineConstants>$(DefineConstants);DEBUG</DefineConstants>
+    <CreatePackage>false</CreatePackage>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="bin\**\*" />
+    <Compile Remove="obj\**\*" />
+    <Compile Remove="Platform\**\*" />
+    <Compile Remove="Properties\**\*" />
+    <Compile Remove="Utilities\System.Numerics.Vectors\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Platform\**\*" />
+    <None Remove="Utilities\System.Numerics.Vectors\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="GraphicsDeviceManager.cs" />
+    <Compile Remove="Graphics\GraphicsAdapter.cs" />
+    <Compile Remove="Graphics\OcclusionQuery.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Platform\GraphicsCapabilities.Metal.cs" />
+    <Compile Include="Platform\Graphics\IRenderTarget.Metal.cs" />
+    <Compile Include="Platform\Graphics\Metal\MetalId.cs" />
+    <Compile Include="Platform\Graphics\Metal\MetalRenderPass.cs" />
+    <Compile Include="Platform\Graphics\Vertices\VertexDeclaration.Metal.cs" />
+    <Compile Include="Platform\iOS\Devices\Sensors\Accelerometer.cs" />
+    <Compile Include="Platform\iOS\Devices\Sensors\Compass.cs" />
+    <!-- A few Metal-specific files below. -->
+    <Compile Include="Platform\GraphicsDevice.Metal.cs" />
+    <Compile Include="Platform\iOS\Metal\iOSGamePlatform.cs" />
+    <Compile Include="Platform\iOS\Metal\iOSGameView.cs" />
+    <Compile Include="Platform\iOS\Metal\iOSGameWindow.cs" />
+    <Compile Include="Platform\iOS\Metal\iOSGameViewController.cs" />
+    <Compile Include="Platform\Graphics\GraphicsDebug.Default.cs" />
+
+    <Compile Include="Platform\Graphics\Texture2D.StbSharp.cs" />
+    <Compile Include="Platform\GamePlatform.Mobile.cs" />
+    <Compile Include="Platform\Graphics\Texture.Metal.cs" />
+    <Compile Include="Platform\Graphics\Texture2D.Metal.cs" />
+    <Compile Include="Platform\Graphics\Texture3D.Metal.cs" />
+    <Compile Include="Platform\Graphics\TextureCollection.Metal.cs" />
+    <Compile Include="Platform\Graphics\TextureCube.Metal.cs" />
+    <Compile Include="Platform\Graphics\GraphicsAdapter.Legacy.cs" />
+    <Compile Include="Platform\GraphicsDeviceManager.Legacy.cs" />
+    <Compile Include="Platform\Graphics\RenderTarget2D.Metal.cs" />
+    <Compile Include="Platform\Graphics\RenderTargetCube.Metal.cs" />
+    <Compile Include="Platform\Graphics\Effect\EffectResource.Metal.cs" />
+    <Compile Include="Platform\Graphics\SamplerStateCollection.Metal.cs" />
+    <Compile Include="Platform\Graphics\Shader\ConstantBuffer.Metal.cs" />
+    <Compile Include="Platform\Graphics\Shader\Shader.Metal.cs" />
+    <Compile Include="Platform\Graphics\Vertices\IndexBuffer.Metal.cs" />
+    <Compile Include="Platform\Graphics\Vertices\VertexBuffer.Metal.cs" />
+    <Compile Include="Platform\iOS\iOSGameView_Touch.cs" />
+    <Compile Include="Platform\Graphics\Metal\MetalBufferCache.cs" />
+    <Compile Include="Platform\iOS\OrientationConverter.cs" />
+    <Compile Include="Platform\Graphics\Metal\MetalDeviceDelegate.Metal.cs" />
+    <Compile Include="Platform\Graphics\Metal\MetalGraphicsHelpers.Metal.cs" />
+    <Compile Include="Platform\Graphics\Metal\MetalPipelineState.Metal.cs" />
+    <Compile Include="Platform\Graphics\Metal\MetalPipelineStateCache.cs" />
+    <Compile Include="Platform\Graphics\Metal\MetalPipelineStateKey.cs" />
+    <Compile Include="Platform\RasterizerState.Metal.cs" />
+    <Compile Include="Platform\RenderTarget3D.Metal.cs" />
+    <Compile Include="Platform\RenderTargetCube.Metal.cs" />
+    <Compile Include="Platform\Threading.cs" />
+    
+    <Compile Include="Platform\Graphics\States\BlendState.Metal.cs" />
+    <Compile Include="Platform\Graphics\States\DepthStencilState.Metal.cs" />
+    <Compile Include="Platform\Graphics\States\RasterizerState.Metal.cs" />
+    <Compile Include="Platform\Graphics\States\SamplerState.Metal.cs" />
+
+    <Compile Include="Platform\Audio\Xact\WaveBank.Default.cs" />
+    <Compile Include="Platform\Input\GamePad.iOS.cs" />
+    <Compile Include="Platform\Input\Joystick.Default.cs" />
+    <Compile Include="Platform\Input\Keyboard.Default.cs" />
+    <Compile Include="Platform\Input\KeyboardInput.iOS.cs" />
+    <Compile Include="Platform\Input\MessageBox.iOS.cs" />
+    <Compile Include="Platform\Input\Mouse.Default.cs" />
+    <Compile Include="Platform\Input\MouseCursor.Default.cs" />
+    <Compile Include="Platform\Media\MediaLibrary.iOS.cs" />
+    <Compile Include="Platform\Media\MediaPlayer.Default.cs" />
+    <Compile Include="Platform\Media\Song.iOS.cs" />
+    <Compile Include="Platform\Media\Video.iOS.cs" />
+    <Compile Include="Platform\Media\VideoPlayer.iOS.cs" />
+    <Compile Include="Platform\TitleContainer.MacOS.cs" />
+    <Compile Include="Platform\Utilities\FuncLoader.iOS.cs" />
+    <Compile Include="Platform\Utilities\InteropHelpers.cs" />
+    <Compile Include="Platform\Utilities\ReflectionHelpers.Default.cs" />
+
+    <Compile Include="..\ThirdParty\StbImageSharp\src\**\*.cs" LinkBase="Utilities\StbImageSharp" />
+    <Compile Include="..\ThirdParty\StbImageWriteSharp\src\**\*.cs" LinkBase="Utilities\StbImageWriteSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="MonoGame.Framework.MetalIOS.targets" PackagePath="build" />
+  </ItemGroup>
+
+  <Import Project="Platform\OpenAL.targets" />
+  <Import Project="Platform\Microsoft.Devices.Sensors.targets" />
+
+  <ItemGroup>
+    <EmbeddedResource Include="Platform\Graphics\Effect\Resources\AlphaTestEffect.metal.mgfxo" />
+    <EmbeddedResource Include="Platform\Graphics\Effect\Resources\BasicEffect.metal.mgfxo" />
+    <EmbeddedResource Include="Platform\Graphics\Effect\Resources\DualTextureEffect.metal.mgfxo" />
+    <EmbeddedResource Include="Platform\Graphics\Effect\Resources\EnvironmentMapEffect.metal.mgfxo" />
+    <EmbeddedResource Include="Platform\Graphics\Effect\Resources\SkinnedEffect.metal.mgfxo" />
+    <EmbeddedResource Include="Platform\Graphics\Effect\Resources\SpriteEffect.metal.mgfxo" />
+  </ItemGroup>
+</Project>
+

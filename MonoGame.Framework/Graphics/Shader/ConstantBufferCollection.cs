@@ -53,6 +53,8 @@ namespace Microsoft.Xna.Framework.Graphics
         internal void SetConstantBuffers(GraphicsDevice device, int shaderProgram)
 #elif OPENGL
         internal void SetConstantBuffers(GraphicsDevice device, ShaderProgram shaderProgram)
+#elif APPLE_METAL
+        internal void SetConstantBuffers(GraphicsDevice device, Shader shader)
 #else
         internal void SetConstantBuffers(GraphicsDevice device)
 #endif
@@ -70,6 +72,8 @@ namespace Microsoft.Xna.Framework.Graphics
                 {
 #if OPENGL || WEB
                     buffer.PlatformApply(device, shaderProgram);
+#elif APPLE_METAL
+                    buffer.PlatformApply(device, shader, i);
 #else
                     buffer.PlatformApply(device, _stage, i);
 #endif

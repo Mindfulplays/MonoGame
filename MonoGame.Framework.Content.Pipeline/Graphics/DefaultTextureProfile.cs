@@ -6,23 +6,24 @@ using System;
 using Microsoft.Xna.Framework.Content.Pipeline.Processors;
 using Microsoft.Xna.Framework.Graphics;
 
-
 namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
 {
     internal class DefaultTextureProfile : TextureProfile
     {
         public override bool Supports(TargetPlatform platform)
         {
-            return  platform == TargetPlatform.Android ||
-                    platform == TargetPlatform.DesktopGL ||
-                    platform == TargetPlatform.MacOSX ||
-                    platform == TargetPlatform.NativeClient ||
-                    platform == TargetPlatform.RaspberryPi ||
-                    platform == TargetPlatform.Windows ||
-                    platform == TargetPlatform.WindowsPhone8 ||
-                    platform == TargetPlatform.WindowsStoreApp ||
-                    platform == TargetPlatform.iOS ||
-                    platform == TargetPlatform.Web;
+            return platform == TargetPlatform.Android ||
+                   platform == TargetPlatform.DesktopGL ||
+                   platform == TargetPlatform.MacOSX ||
+                   platform == TargetPlatform.NativeClient ||
+                   platform == TargetPlatform.RaspberryPi ||
+                   platform == TargetPlatform.Windows ||
+                   platform == TargetPlatform.WindowsPhone8 ||
+                   platform == TargetPlatform.WindowsStoreApp ||
+                   platform == TargetPlatform.iOS ||
+                   platform == TargetPlatform.Web ||
+                   platform == TargetPlatform.MetalIOS ||
+                   platform == TargetPlatform.MetalMacOS;
         }
 
         private static bool IsCompressedTextureFormat(TextureProcessorOutputFormat format)
@@ -35,15 +36,17 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
                 case TextureProcessorOutputFormat.PvrCompressed:
                     return true;
             }
+
             return false;
         }
 
-        private static TextureProcessorOutputFormat GetTextureFormatForPlatform(TextureProcessorOutputFormat format, TargetPlatform platform)
+        private static TextureProcessorOutputFormat GetTextureFormatForPlatform(TextureProcessorOutputFormat format,
+            TargetPlatform platform)
         {
             // Select the default texture compression format for the target platform
             if (format == TextureProcessorOutputFormat.Compressed)
             {
-                if (platform == TargetPlatform.iOS)
+                if (platform == TargetPlatform.iOS || platform == TargetPlatform.MetalIOS)
                     format = TextureProcessorOutputFormat.PvrCompressed;
                 else if (platform == TargetPlatform.Android)
                     format = TextureProcessorOutputFormat.Etc1Compressed;
@@ -54,28 +57,31 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
             if (IsCompressedTextureFormat(format))
             {
                 // Make sure the target platform supports the selected texture compression format
-                if (platform == TargetPlatform.iOS)
+                if (platform == TargetPlatform.iOS || platform == TargetPlatform.MetalIOS)
                 {
                     if (format != TextureProcessorOutputFormat.PvrCompressed)
                         throw new PlatformNotSupportedException("iOS platform only supports PVR texture compression");
                 }
                 else if (platform == TargetPlatform.Windows ||
-                            platform == TargetPlatform.WindowsPhone8 ||
-                            platform == TargetPlatform.WindowsStoreApp ||
-                            platform == TargetPlatform.DesktopGL ||
-                            platform == TargetPlatform.MacOSX ||
-                            platform == TargetPlatform.NativeClient ||
-                            platform == TargetPlatform.Web)
+                         platform == TargetPlatform.WindowsPhone8 ||
+                         platform == TargetPlatform.WindowsStoreApp ||
+                         platform == TargetPlatform.DesktopGL ||
+                         platform == TargetPlatform.MacOSX ||
+                         platform == TargetPlatform.NativeClient ||
+                         platform == TargetPlatform.Web ||
+                         platform == TargetPlatform.MetalMacOS)
                 {
                     if (format != TextureProcessorOutputFormat.DxtCompressed)
-                        throw new PlatformNotSupportedException(platform + " platform only supports DXT texture compression");
+                        throw new PlatformNotSupportedException(platform +
+                                                                " platform only supports DXT texture compression");
                 }
             }
 
             return format;
         }
 
-        public override void Requirements(ContentProcessorContext context, TextureProcessorOutputFormat format, out bool requiresPowerOfTwo, out bool requiresSquare)
+        public override void Requirements(ContentProcessorContext context, TextureProcessorOutputFormat format,
+            out bool requiresPowerOfTwo, out bool requiresSquare)
         {
             if (format == TextureProcessorOutputFormat.Compressed)
                 format = GetTextureFormatForPlatform(format, context.TargetPlatform);
@@ -110,7 +116,8 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Graphics
             }
         }
 
-        protected override void PlatformCompressTexture(ContentProcessorContext context, TextureContent content, TextureProcessorOutputFormat format, bool isSpriteFont)
+        protected override void PlatformCompressTexture(ContentProcessorContext context, TextureContent content,
+            TextureProcessorOutputFormat format, bool isSpriteFont)
         {
             format = GetTextureFormatForPlatform(format, context.TargetPlatform);
 

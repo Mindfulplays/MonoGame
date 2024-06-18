@@ -7,32 +7,36 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 
-
 namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
 {
     internal class DefaultAudioProfile : AudioProfile
     {
         public override bool Supports(TargetPlatform platform)
         {
-            return  platform == TargetPlatform.Android ||
-                    platform == TargetPlatform.DesktopGL ||
-                    platform == TargetPlatform.MacOSX ||
-                    platform == TargetPlatform.NativeClient ||
-                    platform == TargetPlatform.RaspberryPi ||
-                    platform == TargetPlatform.Windows ||
-                    platform == TargetPlatform.WindowsPhone8 ||
-                    platform == TargetPlatform.WindowsStoreApp ||
-                    platform == TargetPlatform.iOS ||
-                    platform == TargetPlatform.Web;
+            return platform == TargetPlatform.Android ||
+                   platform == TargetPlatform.DesktopGL ||
+                   platform == TargetPlatform.MacOSX ||
+                   platform == TargetPlatform.NativeClient ||
+                   platform == TargetPlatform.RaspberryPi ||
+                   platform == TargetPlatform.Windows ||
+                   platform == TargetPlatform.WindowsPhone8 ||
+                   platform == TargetPlatform.WindowsStoreApp ||
+                   platform == TargetPlatform.iOS ||
+                   platform == TargetPlatform.Web ||
+                   platform == TargetPlatform.MetalIOS ||
+                   platform == TargetPlatform.MetalMacOS;
         }
 
-        public override ConversionQuality ConvertAudio(TargetPlatform platform, ConversionQuality quality, AudioContent content)
+        public override ConversionQuality ConvertAudio(TargetPlatform platform, ConversionQuality quality,
+            AudioContent content)
         {
             // Default to PCM data, or ADPCM if the source is ADPCM.
             var targetFormat = ConversionFormat.Pcm;
             if (quality != ConversionQuality.Best || content.Format.Format == 2 || content.Format.Format == 17)
             {
-                if (platform == TargetPlatform.iOS || platform == TargetPlatform.MacOSX || platform == TargetPlatform.DesktopGL)
+                if (platform == TargetPlatform.iOS || platform == TargetPlatform.MacOSX ||
+                    platform == TargetPlatform.DesktopGL || platform == TargetPlatform.MetalIOS ||
+                    platform == TargetPlatform.MetalMacOS)
                     targetFormat = ConversionFormat.ImaAdpcm;
                 else
                     targetFormat = ConversionFormat.Adpcm;
@@ -41,14 +45,15 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
             return ConvertToFormat(content, targetFormat, quality, null);
         }
 
-        public override ConversionQuality ConvertStreamingAudio(TargetPlatform platform, ConversionQuality quality, AudioContent content, ref string outputFileName)
+        public override ConversionQuality ConvertStreamingAudio(TargetPlatform platform, ConversionQuality quality,
+            AudioContent content, ref string outputFileName)
         {
             // Most platforms will use AAC ("mp4") by default
             var targetFormat = ConversionFormat.Aac;
 
-            if (    platform == TargetPlatform.Windows ||
-                    platform == TargetPlatform.WindowsPhone8 ||
-                    platform == TargetPlatform.WindowsStoreApp)
+            if (platform == TargetPlatform.Windows ||
+                platform == TargetPlatform.WindowsPhone8 ||
+                platform == TargetPlatform.WindowsStoreApp)
                 targetFormat = ConversionFormat.WindowsMedia;
 
             else if (platform == TargetPlatform.DesktopGL)
@@ -65,7 +70,8 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
             return ConvertToFormat(content, targetFormat, quality, outputFileName);
         }
 
-        public static void ProbeFormat(string sourceFile, out AudioFileType audioFileType, out AudioFormat audioFormat, out TimeSpan duration, out int loopStart, out int loopLength)
+        public static void ProbeFormat(string sourceFile, out AudioFileType audioFileType, out AudioFormat audioFormat,
+            out TimeSpan duration, out int loopStart, out int loopLength)
         {
             string ffprobeStdout, ffprobeStderr;
             var ffprobeExitCode = ExternalTool.Run(
@@ -90,9 +96,10 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
             try
             {
                 var numberFormat = CultureInfo.InvariantCulture.NumberFormat;
-                foreach (var line in ffprobeStdout.Split(new[] {'\r', '\n', '\0'}, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var line in ffprobeStdout.Split(new[] { '\r', '\n', '\0' },
+                             StringSplitOptions.RemoveEmptyEntries))
                 {
-                    var kv = line.Split(new[] {'='}, 2);
+                    var kv = line.Split(new[] { '=' }, 2);
 
                     switch (kv[0])
                     {
@@ -119,7 +126,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
                             sampleFormat = kv[1].Trim('"').ToLowerInvariant();
                             break;
                         case "streams.stream.0.bit_rate":
-                            averageBytesPerSecond = (int.Parse(kv[1].Trim('"'), numberFormat)/8);
+                            averageBytesPerSecond = (int.Parse(kv[1].Trim('"'), numberFormat) / 8);
                             break;
                         case "format.format_name":
                             formatName = kv[1].Trim('"').ToLowerInvariant();
@@ -133,10 +140,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Failed to parse ffprobe output.", ex);
-            }
+            catch (Exception ex) { throw new InvalidOperationException("Failed to parse ffprobe output.", ex); }
 
             // XNA seems to use the sample format for the bits per sample
             // in the case of non-PCM formats like MP3 and WMA.
@@ -167,10 +171,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
 
             // Figure out the file type.
             var durationMs = (int)Math.Floor(durationInSeconds * 1000.0);
-            if (formatName == "wav")
-            {
-                audioFileType = AudioFileType.Wav;
-            }
+            if (formatName == "wav") { audioFileType = AudioFileType.Wav; }
             else if (formatName == "mp3")
             {
                 audioFileType = AudioFileType.Mp3;
@@ -193,7 +194,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
                 bitsPerSample = Math.Min(bitsPerSample, 16);
             }
             else
-                audioFileType = (AudioFileType) (-1);
+                audioFileType = (AudioFileType)(-1);
 
             // XNA seems to calculate the block alignment directly from 
             // the bits per sample and channel count regardless of the 
@@ -258,17 +259,15 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
                         int avgBytesPerSec = reader.ReadInt32();
                         short blockAlign = reader.ReadInt16();
                         short bitsPerSample = reader.ReadInt16();
-                        audioFormat = new AudioFormat(avgBytesPerSec, bitsPerSample, blockAlign, channels, formatTag, sampleRate);
+                        audioFormat = new AudioFormat(avgBytesPerSec, bitsPerSample, blockAlign, channels, formatTag,
+                            sampleRate);
 
                         fmtLength -= 2 + 2 + 4 + 4 + 2 + 2;
                         if (fmtLength < 0)
                             throw new InvalidOperationException("riff wave header has unexpected format");
                         reader.BaseStream.Seek(fmtLength, SeekOrigin.Current);
                     }
-                    else
-                    {
-                        reader.BaseStream.Seek(reader.ReadInt32(), SeekOrigin.Current);
-                    }
+                    else { reader.BaseStream.Seek(reader.ReadInt32(), SeekOrigin.Current); }
                 }
 
                 var dataSize = reader.ReadInt32();
@@ -278,7 +277,8 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
             return data;
         }
 
-        public static void WritePcmFile(AudioContent content, string saveToFile, int bitRate = 192000, int? sampeRate = null)
+        public static void WritePcmFile(AudioContent content, string saveToFile, int bitRate = 192000,
+            int? sampeRate = null)
         {
             string ffmpegStdout, ffmpegStderr;
             var ffmpegExitCode = ExternalTool.Run(
@@ -289,14 +289,16 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
                     saveToFile,
                     bitRate,
                     sampeRate != null ? "-ar " + sampeRate.Value : ""
-                    ),
+                ),
                 out ffmpegStdout,
                 out ffmpegStderr);
             if (ffmpegExitCode != 0)
-                throw new InvalidOperationException("ffmpeg exited with non-zero exit code: \n" + ffmpegStdout + "\n" + ffmpegStderr);          
+                throw new InvalidOperationException("ffmpeg exited with non-zero exit code: \n" + ffmpegStdout + "\n" +
+                                                    ffmpegStderr);
         }
 
-        public static ConversionQuality ConvertToFormat(AudioContent content, ConversionFormat formatType, ConversionQuality quality, string saveToFile)
+        public static ConversionQuality ConvertToFormat(AudioContent content, ConversionFormat formatType,
+            ConversionQuality quality, string saveToFile)
         {
             var temporaryOutput = Path.GetTempFileName();
             try
@@ -384,7 +386,8 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
 
                 if (ffmpegExitCode != 0)
                 {
-                    throw new InvalidOperationException("ffmpeg exited with non-zero exit code: \n" + ffmpegStdout + "\n" + ffmpegStderr);
+                    throw new InvalidOperationException("ffmpeg exited with non-zero exit code: \n" + ffmpegStdout +
+                                                        "\n" + ffmpegStderr);
                 }
 
                 byte[] rawData;
@@ -405,7 +408,8 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
                 AudioFormat audioFormat;
                 TimeSpan duration;
                 int loopStart, loopLength;
-                ProbeFormat(temporaryOutput, out audioFileType, out audioFormat, out duration, out loopStart, out loopLength);
+                ProbeFormat(temporaryOutput, out audioFileType, out audioFormat, out duration, out loopStart,
+                    out loopLength);
 
                 AudioFormat riffAudioFormat;
                 byte[] data = StripRiffWaveHeader(rawData, out riffAudioFormat);
@@ -426,10 +430,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
 
                 content.SetData(data, audioFormat, duration, loopStart, loopLength);
             }
-            finally
-            {
-                ExternalTool.DeleteFile(temporaryOutput);
-            }
+            finally { ExternalTool.DeleteFile(temporaryOutput); }
 
             return quality;
         }
@@ -440,11 +441,12 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Audio
         {
             switch (format.Format)
             {
-                case 2:     // MS-ADPCM
+                case 2: // MS-ADPCM
                     return (format.BlockAlign / format.ChannelCount - 7) * 2 + 2;
-                case 17:    // IMA/ADPCM
+                case 17: // IMA/ADPCM
                     return (format.BlockAlign / format.ChannelCount - 4) / 4 * 8 + 1;
             }
+
             return 0;
         }
     }

@@ -557,7 +557,7 @@ namespace Microsoft.Xna.Framework
                 lock (_locker)
                     if (sleepTime >= 2.0)
                         System.Threading.Monitor.Wait(_locker, 1);
-#elif DESKTOPGL || ANDROID || IOS
+#elif DESKTOPGL || ANDROID || (IOS && !APPLE_METAL)
                 if (sleepTime >= 2.0)
                     System.Threading.Thread.Sleep(1);
 #endif

@@ -33,8 +33,8 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Builder.Convertors
 			return base.CanConvertFrom (context, sourceType);
 		}
 
-        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
-        {
+		public override object ConvertFrom (ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+		{
             if (value.GetType() == typeof(string))
             {
                 string strValue = (string)value;
@@ -60,23 +60,22 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Builder.Convertors
                 else // Assume the string is in the MonoGame "r,g,b,a" format
                 {                    
                     string[] values = (strValue).Split(new char[] { ',' }, StringSplitOptions.None);
-                    if (values.Length == 4)
-                    {
-                        var r = int.Parse(values[0].Trim());
-                        var g = int.Parse(values[1].Trim());
-                        var b = int.Parse(values[2].Trim());
-                        var a = int.Parse(values[3].Trim());
-                        return new Microsoft.Xna.Framework.Color(r, g, b, a);
-                    }
-                    else
-                    {
+                if (values.Length == 4)
+                {
+                    var r = int.Parse(values[0].Trim());
+                    var g = int.Parse(values[1].Trim());
+                    var b = int.Parse(values[2].Trim());
+                    var a = int.Parse(values[3].Trim());
+                    return new Microsoft.Xna.Framework.Color(r, g, b, a);
+                }
+                else
+                {
                         throw new ArgumentException(string.Format("Could not convert from string({0}) to Color, expected format is 'r,g,b,a' or '{{R:0 G:0 B:0 A:0}}'", value));
                     }
                 }
-            }
+			}
 
-            return base.ConvertFrom(context, culture, value);
-        }
-
-    }
+			return base.ConvertFrom (context, culture, value);
+		}
+	}
 }

@@ -114,4 +114,9 @@
 
   <Import Project="Platform\OpenGL.targets" />
   <Import Project="Platform\OpenAL.targets" />
+
+  <PropertyGroup>
+    <!-- Suppress a bunch of warnings that pollute the output. -->
+    <NoWarn>NU5100;CA2014;CS0067;CS0618;CS3021;CS0414;CS0659;CS0661;CS8981;CS0162;CS0649;CS0169;</NoWarn>
+  </PropertyGroup>  
 </Project>

@@ -20,5 +20,8 @@ namespace MonoGame.Effect
 
         [CommandLineParser.Name("Defines", "\t - Semicolon-delimited define assignments")]
         public string Defines;
+
+        [CommandLineParser.Name("OutputRaw", "\t - Outputs the raw byte-code as an adjacent <filename>.bytecode")]
+        public bool OutputRaw;
     }
 }

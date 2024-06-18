@@ -20,6 +20,8 @@ namespace MonoGame.Framework.Utilities
                 return MonoGamePlatform.Android;
 #elif DESKTOPGL
                 return MonoGamePlatform.DesktopGL;
+#elif APPLE_METAL
+                return MonoGamePlatform.MetalIOS;                
 #elif IOS && !TVOS
                 return MonoGamePlatform.iOS;
 #elif TVOS
@@ -55,10 +57,10 @@ namespace MonoGame.Framework.Utilities
             {
 #if DIRECTX
                 return GraphicsBackend.DirectX;
-#elif OPENGL
-                return GraphicsBackend.OpenGL;
+#elif APPLE_METAL
+                return GraphicsBackend.Metal;
 #else
-                return PlatformGetGraphicsBackend();
+                return GraphicsBackend.OpenGL;
 #endif
             }
         }

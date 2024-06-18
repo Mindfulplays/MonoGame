@@ -1,0 +1,8 @@
+<Project>
+
+  <PropertyGroup>
+    <MonoGamePlatform>MetalIOS</MonoGamePlatform>
+  </PropertyGroup>
+
+</Project>
+

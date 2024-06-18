@@ -39,6 +39,7 @@ namespace Microsoft.Xna.Framework.Content
 
         internal static readonly ByteBufferPool ScratchBufferPool = new ByteBufferPool(1024 * 1024, Environment.ProcessorCount);
 
+        // Keep this in sync with MonoGame.Framework.Content.Pipeline\Serialization\Compiler\ContentWriter.cs
         private static readonly List<char> targetPlatformIdentifiers = new List<char>()
         {
             'w', // Windows (XNA & DirectX)
@@ -57,7 +58,8 @@ namespace Microsoft.Xna.Framework.Content
             'S', // Nintendo Switch
             'G', // Google Stadia
             'b', // WebAssembly and Bridge.NET
-
+            'j', // Metal iOS (j because it's after i iOS and unused.)
+            'k', // Metal macOS
             // NOTE: There are additional identifiers for consoles that 
             // are not defined in this repository.  Be sure to ask the
             // console port maintainers to ensure no collisions occur.

@@ -1,6 +1,7 @@
 [submodule "ThirdParty/Dependencies"]
 	path = ThirdParty/Dependencies
-	url = https://github.com/MonoGame/MonoGame.Dependencies.git
+	url = https://github.com/Mindfulplays/MonoGame.Dependencies.git
+ 	branch = metal-deps
 [submodule "ThirdParty/SDL_GameControllerDB"]
 	path = ThirdParty/SDL_GameControllerDB
 	url = https://github.com/gabomdq/SDL_GameControllerDB.git

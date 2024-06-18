@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "MonoGame.Effect.Compiler": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\repo\\thirdparty\\MonoGame\\MonoGame.Framework\\Platform\\Graphics\\Effect\\Resources\\SpriteEffect.fx  D:\\repo\\thirdparty\\MonoGame\\MonoGame.Framework\\Platform\\Graphics\\Effect\\Resources\\SpriteEffect.metal.mgfxo /Profile:Metal"
+    },
+    "TestFX": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\repo\\thirdparty\\MonoGame\\Tests\\Assets\\Effects\\Mobile\\test.fx D:\\repo\\thirdparty\\MonoGame\\Tests\\Assets\\Effects\\Mobile\\test.fx.metal.mgfxo /Profile:Metal"
+    }
+  }
+}

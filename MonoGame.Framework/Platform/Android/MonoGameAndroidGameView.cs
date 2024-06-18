@@ -314,7 +314,7 @@ namespace Microsoft.Xna.Framework
 
         protected void WorkerThreadFrameDispatcher(SynchronizationContext uiThreadSyncContext)
         {
-            Threading.ResetThread(Thread.CurrentThread.ManagedThreadId);
+            Threading.ResetThread(Environment.CurrentManagedThreadId);
             try
             {
                 stopWatch = System.Diagnostics.Stopwatch.StartNew();
@@ -572,7 +572,7 @@ namespace Microsoft.Xna.Framework
         bool RunIteration(CancellationToken token)
         {
             // set main game thread global ID
-            Threading.ResetThread(Thread.CurrentThread.ManagedThreadId);
+            Threading.ResetThread(Environment.CurrentManagedThreadId);
 
             InternalState currentState = InternalState.Exited_GameThread;
 

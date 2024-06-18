@@ -46,7 +46,7 @@ namespace Microsoft.Xna.Framework.Graphics
                 // TODO: How do i do this?
                 desc.MinimumLod = 0.0f;
 
-                // To support feature level 9.1 these must
+                // To support feature level 9.1 these must 
                 // be set to these exact values.
                 desc.MaximumLod = float.MaxValue;
 

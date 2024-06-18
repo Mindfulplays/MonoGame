@@ -67,6 +67,11 @@ namespace MonoGame.Framework.Utilities
         /// <summary>
         /// MonoGame Google Stadia platform.
         /// </summary>
-        Stadia
+        Stadia,
+
+        /// <summary>
+        /// MonoGame Metal iOS platform.
+        /// </summary>
+        MetalIOS,
     }
 }

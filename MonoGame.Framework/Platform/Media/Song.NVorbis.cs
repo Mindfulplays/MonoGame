@@ -14,6 +14,7 @@ namespace Microsoft.Xna.Framework.Media
         private OggStream stream;
         private float _volume = 1f;
         private readonly object _sourceMutex = new object();
+        private bool _isFinished = false;
 
         private void PlatformInitialize(string fileName)
         {
@@ -30,7 +31,8 @@ namespace Microsoft.Xna.Framework.Media
 
         internal void OnFinishedPlaying()
         {
-            MediaPlayer.OnSongFinishedPlaying(null, null);
+            //MediaPlayer.OnSongFinishedPlaying(null, null);
+            _isFinished = true;
         }
 		
         void PlatformDispose(bool disposing)
@@ -45,7 +47,7 @@ namespace Microsoft.Xna.Framework.Media
             }
         }
 
-        internal void Play(TimeSpan? startPosition)
+        public void Play(TimeSpan? startPosition)
         {
             if (stream == null)
                 return;
@@ -55,9 +57,10 @@ namespace Microsoft.Xna.Framework.Media
                 stream.SeekToPosition((TimeSpan)startPosition);
 
             _playCount++;
+            _isFinished = false;
         }
 
-        internal void Resume()
+        public void Resume()
         {
             if (stream == null)
                 return;
@@ -65,7 +68,7 @@ namespace Microsoft.Xna.Framework.Media
             stream.Resume();
         }
 
-        internal void Pause()
+        public void Pause()
         {
             if (stream == null)
                 return;
@@ -73,7 +76,7 @@ namespace Microsoft.Xna.Framework.Media
             stream.Pause();
         }
 
-        internal void Stop()
+        public void Stop()
         {
             if (stream == null)
                 return;
@@ -82,7 +85,7 @@ namespace Microsoft.Xna.Framework.Media
             _playCount = 0;
         }
 
-        internal float Volume
+        public float Volume
         {
             get
             {
@@ -98,9 +101,6 @@ namespace Microsoft.Xna.Framework.Media
             }
         }
 
-        /// <summary>
-        /// Gets the position of the Song.
-        /// </summary>
         public TimeSpan Position
         {
             get
@@ -159,6 +159,17 @@ namespace Microsoft.Xna.Framework.Media
         private int PlatformGetTrackNumber()
         {
             return 0;
+        }
+
+        partial void PlatformCleanupSoundManager()
+        {
+            // TODO(perumaal): Do not destroy this, OggStream.Dispose CheckError will throw an exception when Disposed twice.
+            // OpenALSoundController.DestroyInstance();            
+        }
+
+        private bool PlatformIsPlaying()
+        {
+            return !_isFinished;
         }
     }
 }

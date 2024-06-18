@@ -9,9 +9,8 @@ namespace Microsoft.Xna.Framework.Media
 {
     public sealed partial class Song : IEquatable<Song>, IDisposable
     {
-        static Android.Media.MediaPlayer _androidPlayer;
-        static Song _playingSong;
-
+        Android.Media.MediaPlayer _androidPlayer;
+        
         private Album album;
         private Artist artist;
         private Genre genre;
@@ -20,6 +19,7 @@ namespace Microsoft.Xna.Framework.Media
         private TimeSpan position;
         private Android.Net.Uri assetUri;
 
+        [CLSCompliant(false)]
         public Android.Net.Uri AssetUri
         {
             get { return this.assetUri; }
@@ -27,8 +27,6 @@ namespace Microsoft.Xna.Framework.Media
 
         static Song()
         {
-            _androidPlayer = new Android.Media.MediaPlayer();
-            _androidPlayer.Completion += AndroidPlayer_Completion;
         }
 
         internal Song(Album album, Artist artist, Genre genre, string name, TimeSpan duration, Android.Net.Uri assetUri)
@@ -46,13 +44,8 @@ namespace Microsoft.Xna.Framework.Media
             // Nothing to do here
         }
 
-        static void AndroidPlayer_Completion(object sender, EventArgs e)
+        void AndroidPlayer_Completion(object sender, EventArgs e)
         {
-            var playingSong = _playingSong;
-            _playingSong = null;
-
-            if (playingSong != null && playingSong.DonePlaying != null)
-                playingSong.DonePlaying(sender, e);
         }
 
         /// <summary>
@@ -70,8 +63,14 @@ namespace Microsoft.Xna.Framework.Media
             // Appears to be a noOp on Android
         }
 
-        internal void Play(TimeSpan? startPosition)
+        public void Play(TimeSpan? startPosition)
         {
+            if (_androidPlayer == null)
+            {
+                _androidPlayer = new Android.Media.MediaPlayer();
+                _androidPlayer.Completion += AndroidPlayer_Completion;
+            }
+
             // Prepare the player
             _androidPlayer.Reset();
 
@@ -91,14 +90,13 @@ namespace Microsoft.Xna.Framework.Media
                 var afd = Game.Activity?.Assets?.OpenFd(_name);
                 if (afd != null)
                 {
-                	_androidPlayer.SetDataSource(afd.FileDescriptor, afd.StartOffset, afd.Length);
+                    _androidPlayer.SetDataSource(afd.FileDescriptor, afd.StartOffset, afd.Length);
                 }
             }
 
 
             _androidPlayer.Prepare();
             _androidPlayer.Looping = MediaPlayer.IsRepeating;
-            _playingSong = this;
 
             if (startPosition.HasValue)
                 Position = startPosition.Value;
@@ -106,25 +104,24 @@ namespace Microsoft.Xna.Framework.Media
             _playCount++;
         }
 
-        internal void Resume()
+        public  void Resume()
         {
             _androidPlayer.Start();
         }
 
-        internal void Pause()
+        public  void Pause()
         {
             _androidPlayer.Pause();
         }
 
-        internal void Stop()
+        public  void Stop()
         {
             _androidPlayer.Stop();
-            _playingSong = null;
             _playCount = 0;
             position = TimeSpan.Zero;
         }
 
-        internal float Volume
+        public  float Volume
         {
             get
             {
@@ -133,7 +130,7 @@ namespace Microsoft.Xna.Framework.Media
 
             set
             {
-                _androidPlayer.SetVolume(value, value);
+                _androidPlayer?.SetVolume(value, value);
             }
         }
 
@@ -141,7 +138,7 @@ namespace Microsoft.Xna.Framework.Media
         {
             get
             {
-                if (_playingSong == this && _androidPlayer.IsPlaying)
+                if (_androidPlayer.IsPlaying)
                     position = TimeSpan.FromMilliseconds(_androidPlayer.CurrentPosition);
 
                 return position;
@@ -202,6 +199,11 @@ namespace Microsoft.Xna.Framework.Media
         {
             return 0;
         }
+
+        private bool PlatformIsPlaying()
+        {
+            return _androidPlayer?.IsPlaying == true;
+        }        
     }
 }
 

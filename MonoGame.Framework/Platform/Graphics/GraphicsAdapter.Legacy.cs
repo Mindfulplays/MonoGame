@@ -156,7 +156,7 @@ namespace Microsoft.Xna.Framework.Graphics
         }
 
         /// <summary>
-        /// Used to request creation of the reference graphics device,
+        /// Used to request creation of the reference graphics device, 
         /// or the default hardware accelerated device (when set to false).
         /// </summary>
         /// <remarks>
@@ -338,7 +338,7 @@ namespace Microsoft.Xna.Framework.Graphics
 #if DESKTOPGL
                     _displayIndex = displayIndex;
                     modes.Clear();
-
+                    
                     var modeCount = Sdl.Display.GetNumDisplayModes(displayIndex);
 
                     for (int i = 0;i < modeCount;i++)

@@ -2,6 +2,7 @@
 // This file is subject to the terms and conditions defined in
 // file 'LICENSE.txt', which is part of this source code package.
 
+using Microsoft.Xna.Framework.Audio;
 using System;
 using System.IO;
 
@@ -81,6 +82,16 @@ namespace Microsoft.Xna.Framework.Media
 			get { return _name; }
 		}
 
+        partial void PlatformCleanupSoundManager();
+
+        /// <summary>
+        /// Must only be called on exit. Otherwise, might break ongoing song/sound effect instances.
+        /// </summary>
+        public void CleanupSoundManager()
+        {
+            PlatformCleanupSoundManager();
+        }
+
         /// <summary>
         /// Returns a song that can be played via <see cref="MediaPlayer"/>.
         /// </summary>
@@ -137,6 +148,12 @@ namespace Microsoft.Xna.Framework.Media
 #endif
 		}
 
+        public bool IsPlaying()
+        {
+            return PlatformIsPlaying();
+        }
+		
+		
         /// <inheritdoc/>
         public override bool Equals(Object obj)
 		{

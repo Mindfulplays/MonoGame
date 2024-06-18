@@ -26,8 +26,8 @@
       <MonoGameContentBuilderExe Condition="'$(MonoGameContentBuilderExe)' == ''">$(MSBuildThisFileDirectory)Tools\MGCB.exe</MonoGameContentBuilderExe>
       <MonoGameContentBuilderCmd>&quot;$(MonoGameContentBuilderExe)&quot;</MonoGameContentBuilderCmd>
       <MonoGameContentBuilderCmd Condition=" '$(OS)' != 'Windows_NT' ">$(MonoExe) $(MonoGameContentBuilderCmd)</MonoGameContentBuilderCmd>
-      <PlatformResourcePrefix Condition="'$(MonoGamePlatform)' == 'MacOSX'">$(MonoMacResourcePrefix)</PlatformResourcePrefix>
-      <PlatformResourcePrefix Condition="'$(MonoGamePlatform)' == 'iOS'">$(IPhoneResourcePrefix)</PlatformResourcePrefix>
+      <PlatformResourcePrefix Condition="'$(MonoGamePlatform)' == 'MacOSX'" >$(MonoMacResourcePrefix)</PlatformResourcePrefix>
+      <PlatformResourcePrefix Condition="'$(MonoGamePlatform)' == 'iOS' || '$(MonoGamePlatform)' == 'MetalIOS'" >$(IPhoneResourcePrefix)</PlatformResourcePrefix>
       <PlatformResourcePrefix Condition="'$(MonoGamePlatform)' == 'Android'">$(MonoAndroidAssetsPrefix)</PlatformResourcePrefix>
       <PlatformResourcePrefix Condition="'$(PlatformResourcePrefix)' != '' And !HasTrailingSlash('$(PlatformResourcePrefix)')">$(PlatformResourcePrefix)\</PlatformResourcePrefix>
       <PlatformResourcePrefix Condition="'$(PlatformResourcePrefix)' == ''"></PlatformResourcePrefix>
@@ -41,7 +41,7 @@
         <Output TaskParameter="Output" ItemName="ContentReferences"/>
     </CollectContentReferences>
 
-    <Error Text="The MonoGamePlatform property was not defined in the project!  It must be set to Windows, WindowsGL, WindowsStoreApp, WindowsPhone8, MacOSX, iOS, Linux, DesktopGL, RaspberryPi, Android, NativeClient, PlayStation4, PSVita, XboxOne or PlayStationMobile."
+    <Error Text="The MonoGamePlatform property was not defined in the project!  It must be set to Windows, WindowsGL, WindowsStoreApp, WindowsPhone8, MacOSX, MetalMacOS, iOS, MetalIOS, Linux, DesktopGL, RaspberryPi, Android, NativeClient, PlayStation4, PSVita, XboxOne or PlayStationMobile."
        Condition="	'$(MonoGamePlatform)' != 'Windows' And
 			'$(MonoGamePlatform)' != 'iOS' And       
 			'$(MonoGamePlatform)' != 'Android' And       
@@ -55,7 +55,10 @@
 			'$(MonoGamePlatform)' != 'PlayStation4' And       
 			'$(MonoGamePlatform)' != 'PlayStation5' And       
 			'$(MonoGamePlatform)' != 'XboxOne' And 
-			'$(MonoGamePlatform)' != 'WindowsGL'" />
+			'$(MonoGamePlatform)' != 'WindowsGL' And
+			'$(MonoGamePlatform)' != 'MetalIOS' And
+			'$(MonoGamePlatform)' != 'MetalMacOS' And
+      " />
 
     <Error
         Text="The MonoGame content builder executable could not be located at '$(MonoGameContentBuilderExe)'!"
@@ -96,8 +99,8 @@
     <CreateItem Include="%(ExtraContent.FullPath)"
          AdditionalMetadata="Link=$(PlatformResourcePrefix)%(ExtraContent.ContentOutputDir)%(ExtraContent.RecursiveDir)%(ExtraContent.Filename)%(ExtraContent.Extension);CopyToOutputDirectory=PreserveNewest"
          Condition="'%(ExtraContent.Filename)' != ''">
-      <Output TaskParameter="Include" ItemName="Content" Condition="'$(MonoGamePlatform)' != 'Android' And '$(MonoGamePlatform)' != 'iOS' And '$(MonoGamePlatform)' != 'MacOSX'" />
-      <Output TaskParameter="Include" ItemName="BundleResource" Condition="'$(MonoGamePlatform)' == 'MacOSX' Or '$(MonoGamePlatform)' == 'iOS'" />
+      <Output TaskParameter="Include" ItemName="Content" Condition="'$(MonoGamePlatform)' != 'Android' And '$(MonoGamePlatform)' != 'iOS' And '$(MonoGamePlatform)' != 'MacOSX'"  And '$(MonoGamePlatform)' != 'MetalIOS'"  And '$(MonoGamePlatform)' != 'MetalMacOS'" />
+      <Output TaskParameter="Include" ItemName="BundleResource" Condition="'$(MonoGamePlatform)' == 'MacOSX' Or '$(MonoGamePlatform)' == 'iOS' Or '$(MonoGamePlatform)' == 'MetalMacOS' Or '$(MonoGamePlatform)' == 'MetalIOS'" />
       <Output TaskParameter="Include" ItemName="AndroidAsset" Condition="'$(MonoGamePlatform)' == 'Android'" />
     </CreateItem>
   </Target>

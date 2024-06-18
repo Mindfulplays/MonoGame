@@ -64,11 +64,20 @@ namespace MonoGame.Effect
 
         public bool ParseCommandLine(string[] args)
         {
+            // Skip the first arg if we are running via `dotnet run`.
+            if (args.Length > 1 && args[0].ToLower().EndsWith(".csproj") || args[0].ToLower().EndsWith(".exe"))
+            {
+                args = args.Skip(1).ToArray();
+            }
+            
             // Parse each argument in turn.
             foreach (var arg in args)
             {
                 if (!ParseArgument(arg.Trim()))
+                {
+                    ShowError(string.Format("Provided args: {0}", string.Join(' ', args)));
                     return false;
+                }
             }
 
             // Make sure we got all the required options.
@@ -224,7 +233,7 @@ namespace MonoGame.Effect
             if (_optionalUsageHelp.Count > 0)
             {
                 Console.Error.WriteLine();
-                Console.Error.WriteLine("Options:");
+                Console.Error.WriteLine("Options: (must be after the output file)");
 
                 foreach (string optional in _optionalUsageHelp)
                     Console.Error.WriteLine("    {0}", optional);
