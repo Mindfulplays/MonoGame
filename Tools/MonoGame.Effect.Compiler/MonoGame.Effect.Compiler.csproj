@@ -72,7 +72,16 @@
     <PackageReference Include="Microsoft.NETCore.App" Version="2.1.30" />
     <PackageReference Include="SharpDX" Version="4.0.1" />
     <PackageReference Include="SharpDX.D3DCompiler" Version="4.0.1" />
+    <PackageReference Include="Microsoft.Direct3D.DXC" Version="1.8.2405.17" />
   </ItemGroup>
+  <!--
+
+  And add this below?
+  
+
+  And add spirv-cross as a nuget package (which is unavailable) but a good 'project'
+  See https://github.com/FaberSanZ/SPIRV-Cross.NET
+  -->
   <ItemGroup>
     <Content Include="..\..\ThirdParty\Dependencies\SPIRVCross\Windows\spirv-cross.exe" Visible="false">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -82,21 +91,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\..\ThirdParty\Dependencies\DXShaderCompiler\Windows\x64\dxc.exe" Visible="false">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\ThirdParty\Dependencies\DXShaderCompiler\Windows\x64\dxcompiler.dll" Visible="false">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\ThirdParty\Dependencies\DXShaderCompiler\Windows\x64\dxil.dll" Visible="false">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="..\..\ThirdParty\Dependencies\DXShaderCompiler\Linux\dxc" Visible="false">
-      <Link>linux\dxc</Link>    
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+
+  <Target Name="CopyNuGetToolFiles" AfterTargets="Build">
+    <ItemGroup>
+      <ToolFiles Include="$(NuGetPackageRoot)Microsoft.Direct3D.DXC\1.8.2405.17\build\native\bin\x64\*.dll" />
+	  <ToolFiles Include="$(NuGetPackageRoot)Microsoft.Direct3D.DXC\1.8.2405.17\build\native\bin\x64\*.exe" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ToolFiles)" DestinationFolder="$(OutputPath)" />
+  </Target>
   <ItemGroup>
     <Reference Include="..\..\ThirdParty\Dependencies\CppNet\CppNet.dll" />
   </ItemGroup>

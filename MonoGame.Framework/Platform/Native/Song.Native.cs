@@ -67,4 +67,9 @@ public sealed partial class Song : IEquatable<Song>, IDisposable
     {
         return 0;
     }
+
+    public bool PlatformIsPlaying()
+    {
+      return false;
+    }
 }

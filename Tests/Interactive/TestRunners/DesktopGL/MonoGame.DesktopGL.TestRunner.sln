@@ -13,6 +13,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MonoGame.Interactive.Tests"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoGame.Framework.Content.Pipeline", "..\..\..\..\MonoGame.Framework.Content.Pipeline\MonoGame.Framework.Content.Pipeline.csproj", "{DB06D309-9994-455E-BC79-2D2294819AE9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MonoGame.Effect.Compiler", "..\..\..\..\Tools\MonoGame.Effect.Compiler\MonoGame.Effect.Compiler.csproj", "{7F62FD3F-4B0B-44CF-81E2-831FEAA36B47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{DB06D309-9994-455E-BC79-2D2294819AE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB06D309-9994-455E-BC79-2D2294819AE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB06D309-9994-455E-BC79-2D2294819AE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F62FD3F-4B0B-44CF-81E2-831FEAA36B47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F62FD3F-4B0B-44CF-81E2-831FEAA36B47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F62FD3F-4B0B-44CF-81E2-831FEAA36B47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F62FD3F-4B0B-44CF-81E2-831FEAA36B47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
