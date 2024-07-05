@@ -28,6 +28,11 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
         public virtual EffectProcessorDebugMode DebugMode { get { return debugMode; } set { debugMode = value; } }
 
         /// <summary>
+        /// Whether to output raw intermediate files (SpirV - spv/Metal - msl) right next to the source files.
+        /// </summary>
+        public bool OutputRawShaders { get; set; } = false;
+
+        /// <summary>
         /// Define assignments for the effect.
         /// </summary>
         /// <value>A list of define assignments delimited by semicolons.</value>
@@ -55,6 +60,9 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
             var arguments = "\"" + mgfxc + "\" \"" + sourceFile + "\" \"" + destFile + "\" /Profile:" +
                             GetProfileForPlatform(context.TargetPlatform);
 
+            if (OutputRawShaders)
+                arguments += " /OutputRaw";
+
             if (debugMode == EffectProcessorDebugMode.Debug)
                 arguments += " /Debug";
 
@@ -73,7 +81,7 @@ namespace Microsoft.Xna.Framework.Content.Pipeline.Processors
             {
                 if (line.StartsWith("Dependency:") && line.Length > 12) { context.AddDependency(line.Substring(12)); }
             }
-
+            context.Logger.LogMessage(stdout);
             ProcessErrorsAndWarnings(!success, shaderCompilationOutput: stdout, shaderErrorsAndWarnings: stderr, input, context);
 
             return ret;

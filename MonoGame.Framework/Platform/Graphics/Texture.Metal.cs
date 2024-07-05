@@ -14,14 +14,14 @@ namespace Microsoft.Xna.Framework.Graphics
         {
         }
 
-        // TODO: Fill in correct sampler index.
         public int SamplerIndex { get; set; } = 0;
 
-        public void Apply(IMTLRenderCommandEncoder renderEncoder)
+        public void Apply(IMTLRenderCommandEncoder renderEncoder, int samplerIndex)
         {
             if (_texture == null) { return; }
 
             renderEncoder.UseResource(_texture, MTLResourceUsage.Read);
+            SamplerIndex = samplerIndex;
             renderEncoder.SetFragmentTexture(_texture, (nuint)SamplerIndex);
         }
     }

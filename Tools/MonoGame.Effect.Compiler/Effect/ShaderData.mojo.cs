@@ -171,11 +171,12 @@ namespace MonoGame.Effect
 
 			// Add the required precision specifiers for GLES.
 
-            var floatPrecision = dxshader.IsVertexShader ? "precision highp float;\r\n" : "precision mediump float;\r\n";
+            var floatPrecision = dxshader.IsVertexShader ? "precision highp float;\r\n" : "precision highp float;\r\n";
 
+            // NOTE(perumaal): Tweaks to GLES - Mali GPUs still have some problem, but overall this is okay.
 			glslCode = "#ifdef GL_ES\r\n" +
                  floatPrecision +
-				"precision mediump int;\r\n" +
+                "precision highp int;\r\n" +
 				"#endif\r\n" +
 				glslCode;
 

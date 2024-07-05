@@ -29,7 +29,7 @@ namespace Microsoft.Xna.Framework.Graphics
                 var tex = _textures[i];
                 if (tex != null)
                 {
-                    tex.Apply(device.CurrentRenderEncoder);
+                    tex.Apply(device.CurrentRenderEncoder, i);
                 }
             }
         }

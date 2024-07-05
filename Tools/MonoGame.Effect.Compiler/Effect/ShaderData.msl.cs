@@ -29,34 +29,41 @@ namespace MonoGame.Effect
             Console.WriteLine($"Converting SPIRV->MSL for {shaderFunctionName} in {shaderResult.FilePath}");
             string spirVCrossTool = "spirv-cross";
 
+            // Convert from HLSL to SpirV - output is in a temporary directory.
+            var spirvFile = shaderData.SpirVOutputFile;
+            if (string.IsNullOrEmpty(spirvFile) || !File.Exists(spirvFile))
             {
-                // Convert from HLSL to SpirV - output is in a temporary directory.
-                var spirvFile = shaderData.SpirVOutputFile;
-                if (string.IsNullOrEmpty(spirvFile) || !File.Exists(spirvFile))
-                {
-                    throw new Exception($"SpirV output is missing {spirvFile}");
-                }
+                throw new Exception($"SpirV output is missing {spirvFile}");
+            }
 
-                shaderData.MetalOutputFile = Path.ChangeExtension(shaderData.SpirVOutputFile, ".msl");
-                var additionalOptions =
-                    $"--rename-entry-point {shaderFunctionName} main {(isVertexShader ? "vert" : "frag")} " +
-                    $"";
-                // MSL Version: MMmmpp (1.2.0) - this allows us to target the lowest Metal-supported devices such
-                // as iPad Mini 2, iPhone 5s. See https://developer.apple.com/support/required-device-capabilities/#iphone-devices
-                // Note that this generates code that is supported by the lowest version: we still need to nudge
-                // the compiler (at runtime for instance) to explicitly provide the compiler version via MTLCompileOptions MTLLanguageVersion.
-                if (ExternalTool.Run(spirVCrossTool,
-                        $"--msl --msl-ios  --msl-version 10200 {additionalOptions} --output {shaderData.MetalOutputFile} {shaderData.SpirVOutputFile}",
-                        out var stdout, out var stderr) != _SUCCESS_RETURN_CODE ||
-                    !File.Exists(shaderData.MetalOutputFile))
-                {
-                    throw new Exception($"Unable to convert spirv to metal:\n{stdout}\n{stderr}");
-                }
+            var entryPoint = isVertexShader ? "vert" : "frag";
+            shaderData.MetalOutputFile = Path.ChangeExtension(shaderData.SpirVOutputFile, ".msl");
+            var additionalOptions =
+                $"--rename-entry-point {shaderFunctionName} main {entryPoint} " +
+                $"";
+            // MSL Version: MMmmpp (1.2.0) - this allows us to target the lowest Metal-supported devices such
+            // as iPad Mini 2, iPhone 5s. See https://developer.apple.com/support/required-device-capabilities/#iphone-devices
+            // Note that this generates code that is supported by the lowest version: we still need to nudge
+            // the compiler (at runtime for instance) to explicitly provide the compiler version via MTLCompileOptions MTLLanguageVersion.
+            if (ExternalTool.Run(spirVCrossTool,
+                    $"--msl --msl-ios  --msl-version 10200 {additionalOptions} --output {shaderData.MetalOutputFile} {shaderData.SpirVOutputFile}",
+                    out var stdout, out var stderr) != _SUCCESS_RETURN_CODE ||
+                !File.Exists(shaderData.MetalOutputFile))
+            {
+                throw new Exception($"Unable to convert spirv to metal:\n{stdout}\n{stderr}");
+            }
 
-                Console.WriteLine($" -- MetalSL written to {shaderData.MetalOutputFile}");
-                var metalBytes = File.ReadAllBytes(shaderData.MetalOutputFile);
-                shaderData.MetalShaderBytes = metalBytes;
-                shaderData.ShaderCode = metalBytes;
+            Console.WriteLine($" -- MetalSL written to {shaderData.MetalOutputFile}");
+            var metalBytes = File.ReadAllBytes(shaderData.MetalOutputFile);
+            shaderData.MetalShaderBytes = metalBytes;
+            shaderData.ShaderCode = metalBytes;
+
+            if (options.OutputRaw)
+            {
+                var copyPathTo = $"{shaderResult.FilePath}.{entryPoint}.msl";
+                copyPathTo = ConvertRawOutputPath(copyPathTo);
+                Console.WriteLine($"-- Writing raw Metal (text msl) file to {copyPathTo} {metalBytes.Length} bytes");
+                File.WriteAllBytes(path: copyPathTo, metalBytes);
             }
 
             return shaderData;

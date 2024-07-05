@@ -21,7 +21,7 @@ namespace MonoGame.Effect
         [CommandLineParser.Name("Defines", "\t - Semicolon-delimited define assignments")]
         public string Defines;
 
-        [CommandLineParser.Name("OutputRaw", "\t - Outputs the raw byte-code as an adjacent <filename>.bytecode")]
+        [CommandLineParser.Name("OutputRaw", "\t - Outputs the raw byte-code to out/<filename>.<shader_type>.<shader_ext> e.g. out/SpriteEffect.frag.glsl")]
         public bool OutputRaw;
     }
 }

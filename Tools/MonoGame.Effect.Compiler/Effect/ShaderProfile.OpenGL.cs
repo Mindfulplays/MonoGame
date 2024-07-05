@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using MonoGame.Effect.TPGParser;
@@ -53,6 +54,14 @@ namespace MonoGame.Effect
 
             var shaderInfo = shaderResult.ShaderInfo;
             var shaderData = ShaderData.CreateGLSL(bytecode, isVertexShader, effect.ConstantBuffers, effect.Shaders.Count, shaderInfo.SamplerStates, shaderResult.Debug);
+            if (shaderResult.Options.OutputRaw)
+            {
+                var copyPathTo = $"{shaderResult.FilePath}.{(isVertexShader ? "vert" : "frag")}.glsl";
+                copyPathTo = ShaderData.ConvertRawOutputPath(copyPathTo);
+                Console.WriteLine($"-- Writing raw GLSL file to {copyPathTo}");
+                File.WriteAllBytes(path: copyPathTo, shaderData.ShaderCode);
+                
+            }
             effect.Shaders.Add(shaderData);
 
             return shaderData;

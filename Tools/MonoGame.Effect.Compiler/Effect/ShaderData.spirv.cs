@@ -62,11 +62,34 @@ namespace MonoGame.Effect
 
                 Console.WriteLine($" ---- SpirV written to {spirvFile}");
                 shaderData.SpirVOutputFile = spirvFile;
+
+                if (options.OutputRaw)
+                {
+                    var copyPathTo = $"{shaderResult.FilePath}.{(isVertexShader ? "vert" : "frag")}.spv";
+                    copyPathTo = ConvertRawOutputPath(copyPathTo);
+                    Console.WriteLine($"-- Writing raw SpirV file to {copyPathTo}");
+                    File.Copy(sourceFileName: spirvFile, destFileName: copyPathTo, overwrite: true);
+                }
             }
 
             return shaderData;
         }
 
         public string SpirVOutputFile { get; set; }
+
+        /// <summary>
+        /// Used by the various shader effect converters to output the raw GLSL/SPV/MSL bytecode
+        /// to an output folder.
+        /// 
+        /// Given a <paramref name="filePath"/> of the form `/a/b/c.frag.spv` (WLOG Win/Linux/Mac),
+        /// this method creates an output folder called `/a/b/out/` and returns `/a/b/out/c.frag.spv`.
+        /// </summary>
+        public static string ConvertRawOutputPath(string filePath)
+        {
+            var filename = Path.GetFileName(filePath);
+            var dirName = Path.Combine(Path.GetDirectoryName(filePath), "out");
+            Directory.CreateDirectory(dirName);
+            return Path.Combine(dirName, filename);
+        }
     }
 }
