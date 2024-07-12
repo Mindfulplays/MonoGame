@@ -33,8 +33,8 @@ namespace MonoGame.InteractiveTests
 
             GameDebug.LogInfo($"--Discovered {_interactiveTests.Count} tests.");
 
-            // Also turn on GraphicsDebug messages.
-            GraphicsDebug.EnableOutputDebugMessagesToConsole();
+            // Also turn on GraphicsDebug messages. TODO: Need to include GraphicsDebug changes later.
+            // GraphicsDebug.EnableOutputDebugMessagesToConsole();
         }
 
         public IReadOnlyList<InteractiveTest> Tests { get { return _interactiveTests; } }
